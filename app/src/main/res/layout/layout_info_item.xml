@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:showDividers="middle"
+    android:padding="10dp"
+    android:divider="@drawable/line_shape"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/info_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="玉兰路433号长沙西中心"/>
+
+    <TextView
+        android:id="@+id/info_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="张三"/>
+
+    <TextView
+        android:id="@+id/info_tel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="13140232930"/>
+
+    <TextView
+        android:id="@+id/info_orientation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="向南"/>
+
+    <Button
+        android:id="@+id/btn_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="image"
+        android:textSize="10sp"/>
+
+    <Button
+        android:id="@+id/btn_update"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="update"
+        android:textSize="10sp"/>
+</LinearLayout>
