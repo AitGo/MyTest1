@@ -149,44 +149,7 @@ public class MainActivity extends Activity implements View.OnClickListener, AMap
                 mlocationClient.startLocation();//启动定位
                 break;
             case R.id.btn_edit:
-                test();
                 break;
-        }
-    }
-
-    FileOutputStream fileOutputStream;
-//    String s = "";
-    String s = "据找刘报称:2019年05月17日14时23分，在一夜，该处发现一起强奸案，后拨打电话报警。";
-//    String s = "据<被害人/报案人>2019年5月23日";
-    public void test() {
-
-        XmlSerializer xmlSerializer;
-        try {
-            xmlSerializer = Xml.newSerializer();
-            File file = new File(Environment.getExternalStorageDirectory(), "ScenesMsg.xml");
-            fileOutputStream = new FileOutputStream(file);
-
-            String encoding = "utf-8";
-            xmlSerializer.setOutput(fileOutputStream, encoding);
-            xmlSerializer.startDocument(encoding, null);
-            xmlSerializer.startTag(null, "datas");
-
-            xmlSerializer.startTag(null, "test");
-            xmlSerializer.text(s);
-            xmlSerializer.endTag(null, "test");
-
-            xmlSerializer.endTag(null, "datas");
-            xmlSerializer.endDocument();
-        }catch (Exception e) {
-            e.printStackTrace();
-        }finally {
-            if (fileOutputStream != null) {
-                try {
-                    fileOutputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 
