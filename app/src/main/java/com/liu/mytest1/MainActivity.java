@@ -175,13 +175,7 @@ public class MainActivity extends Activity implements View.OnClickListener, AMap
                 drawerLayout.closeDrawer(leftLayout);
                 aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraInfos.get(position).getLatLng(),17));
                 markers.get(position).remove();
-                MarkerOptions markerOption = new MarkerOptions();
-                markerOption.position(cameraInfos.get(position).getLatLng());
-                // markerOption.snippet("西安市：111");
-                markerOption.draggable(true);
-                markerOption.setFlat(true);
-                markerOption.icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(),R.mipmap.camera_red)));
-                checkMarkers.add(aMap.addMarker(markerOption));
+                addMarker(cameraInfos.get(position).getLatLng(),R.mipmap.camera_blue,checkMarkers);
             }
         });
     }
@@ -243,13 +237,17 @@ public class MainActivity extends Activity implements View.OnClickListener, AMap
     }
 
     private void drawPoint(LatLng latLng) {
+        addMarker(latLng,R.mipmap.camera_yellow,markers);
+    }
+
+    private void addMarker(LatLng latLng,int markerIcon,List<Marker> markerList) {
         MarkerOptions markerOption = new MarkerOptions();
         markerOption.position(latLng);
         // markerOption.snippet("西安市：111");
         markerOption.draggable(true);
         markerOption.setFlat(true);
-        markerOption.icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(),R.mipmap.camera_black)));
-        markers.add(aMap.addMarker(markerOption));
+        markerOption.icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(),markerIcon)));
+        markerList.add(aMap.addMarker(markerOption));
     }
 
     /**
