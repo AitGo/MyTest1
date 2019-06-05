@@ -1,5 +1,7 @@
 package com.liu.mytest1;
 
+import android.graphics.Camera;
+
 import com.amap.api.maps.model.LatLng;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
 
@@ -34,6 +36,10 @@ public class CameraInfo implements MultiItemEntity {
 
     public CameraInfo(int itemType) {
         this.itemType = itemType;
+    }
+
+    public CameraInfo() {
+
     }
 
     public LatLng getLatLng() {

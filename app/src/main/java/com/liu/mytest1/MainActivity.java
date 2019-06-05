@@ -1,6 +1,7 @@
 package com.liu.mytest1;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,16 +13,22 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.Xml;
 import android.view.View;
 import android.view.animation.Interpolator;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -46,6 +53,8 @@ import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.RegeocodeAddress;
 import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.amap.api.services.geocoder.RegeocodeResult;
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.liu.mytest1.adapter.PointsListAdapter;
 import com.liu.mytest1.adapter.WindowAdapter;
 
 import org.xmlpull.v1.XmlSerializer;
@@ -60,9 +69,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import pub.devrel.easypermissions.EasyPermissions;
 
 
-public class MainActivity extends Activity implements View.OnClickListener, AMap.OnMapClickListener, AMap.OnMarkerClickListener, AMap.OnMapLoadedListener, LocationSource {
+public class MainActivity extends Activity implements View.OnClickListener, AMap.OnMapClickListener, AMap.OnMarkerClickListener, AMap.OnMapLoadedListener, LocationSource, EasyPermissions.PermissionCallbacks {
     MapView mMapView = null;
     private AMap aMap;
     LocationSource.OnLocationChangedListener mListener;
@@ -88,6 +98,11 @@ public class MainActivity extends Activity implements View.OnClickListener, AMap
 
     private ImageButton btn_position;
     private Button btn_edit;
+    public DrawerLayout drawerLayout;
+    private RelativeLayout leftLayout;
+    private RecyclerView rv_points;
+    private PointsListAdapter adapter;
+    private List<CameraInfo> cameraInfos = new ArrayList<>();
 
     private GeocodeSearch geocoderSearch;
 
@@ -104,8 +119,16 @@ public class MainActivity extends Activity implements View.OnClickListener, AMap
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //获取权限
+        getPermission();
+
         btn_position = (ImageButton)findViewById(R.id.btn_position);
         btn_edit = findViewById(R.id.btn_edit);
+        drawerLayout = (DrawerLayout) findViewById(R.id.main_drawer_layout);
+        leftLayout = findViewById(R.id.main_left_drawer_layout);
+        rv_points = findViewById(R.id.rv_points);
+        rv_points.setLayoutManager(new LinearLayoutManager(this));
+
 
         btn_position.setOnClickListener(this);
         btn_edit.setOnClickListener(this);
@@ -140,6 +163,52 @@ public class MainActivity extends Activity implements View.OnClickListener, AMap
         // 设置定位的类型为定位模式，有定位、跟随或地图根据面向方向旋转几种
         aMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
 
+
+        initData();
+        adapter = new PointsListAdapter(R.layout.item_points,cameraInfos);
+        rv_points.setAdapter(adapter);
+        adapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                drawerLayout.closeDrawer(leftLayout);
+                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraInfos.get(position).getLatLng(),16));
+            }
+        });
+    }
+
+    private void initData() {
+
+        LatLng latLng1 = new LatLng((double) 28.208663, (double) 112.913565);
+        LatLng latLng2 = new LatLng((double) 28.206535, (double) 112.90216);
+        LatLng latLng3 = new LatLng((double) 28.210941, (double) 112.912213);
+
+        CameraInfo cameraInfo1 = new CameraInfo();
+        cameraInfo1.setAddress("长沙西中心");
+        cameraInfo1.setLatLng(latLng1);
+        cameraInfo1.setName("张三");
+        cameraInfo1.setTel("13124562458");
+        cameraInfo1.setOrientation("向南");
+        cameraInfos.add(cameraInfo1);
+
+        CameraInfo cameraInfo2 = new CameraInfo();
+        cameraInfo2.setAddress("长沙航天医院");
+        cameraInfo2.setLatLng(latLng2);
+        cameraInfo2.setName("李四");
+        cameraInfo2.setTel("13124562458");
+        cameraInfo2.setOrientation("向南");
+        cameraInfos.add(cameraInfo2);
+
+        CameraInfo cameraInfo3 = new CameraInfo();
+        cameraInfo3.setAddress("长沙汽车西站四合院");
+        cameraInfo3.setLatLng(latLng3);
+        cameraInfo3.setName("王五");
+        cameraInfo3.setTel("13124562458");
+        cameraInfo3.setOrientation("向南");
+        cameraInfos.add(cameraInfo3);
+
+        drawPoint(latLng1);
+        drawPoint(latLng2);
+        drawPoint(latLng3);
     }
 
     @Override
@@ -149,6 +218,11 @@ public class MainActivity extends Activity implements View.OnClickListener, AMap
                 mlocationClient.startLocation();//启动定位
                 break;
             case R.id.btn_edit:
+                if (drawerLayout.isDrawerOpen(leftLayout)) {
+                    drawerLayout.closeDrawer(leftLayout);
+                } else {
+                    drawerLayout.openDrawer(leftLayout);
+                }
                 break;
         }
     }
@@ -231,108 +305,32 @@ public class MainActivity extends Activity implements View.OnClickListener, AMap
      * @param
      * @since 2.5.0
      */
-    private void checkPermissions(String... permissions) {
-        //获取权限列表
-        List<String> needRequestPermissonList = findDeniedPermissions(permissions);
-        if (null != needRequestPermissonList
-                && needRequestPermissonList.size() > 0) {
-            //list.toarray将集合转化为数组
-            ActivityCompat.requestPermissions(this,
-                    needRequestPermissonList.toArray(new String[needRequestPermissonList.size()]),
-                    PERMISSON_REQUESTCODE);
+    private void getPermission() {
+        if (EasyPermissions.hasPermissions(this, needPermissions)) {
+            //已经打开权限
+            Toast.makeText(this, "已经申请相关权限", Toast.LENGTH_SHORT).show();
+        } else {
+            //没有打开相关权限、申请权限
+            EasyPermissions.requestPermissions(this, "需要获取您的存储、定位权限", 1, needPermissions);
         }
-    }
 
-
-    /**
-     * 获取权限集中需要申请权限的列表
-     *
-     * @param permissions
-     * @return
-     * @since 2.5.0
-     */
-    private List<String> findDeniedPermissions(String[] permissions) {
-        List<String> needRequestPermissonList = new ArrayList<String>();
-        //for (循环变量类型 循环变量名称 : 要被遍历的对象)
-        for (String perm : permissions) {
-            if (ContextCompat.checkSelfPermission(this,
-                    perm) != PackageManager.PERMISSION_GRANTED
-                    || ActivityCompat.shouldShowRequestPermissionRationale(
-                    this, perm)) {
-                needRequestPermissonList.add(perm);
-            }
-        }
-        return needRequestPermissonList;
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String[] permissions, int[] paramArrayOfInt) {
-        if (requestCode == PERMISSON_REQUESTCODE) {
-            if (!verifyPermissions(paramArrayOfInt)) {      //没有授权
-                showMissingPermissionDialog();              //显示提示信息
-                isNeedCheck = false;
-            }
-        }
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        Toast.makeText(this, "相关权限获取成功", Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * 检测是否说有的权限都已经授权
-     *
-     * @param grantResults
-     * @return
-     * @since 2.5.0
-     */
-    private boolean verifyPermissions(int[] grantResults) {
-        for (int result : grantResults) {
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                return false;
-            }
-        }
-        return true;
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        Toast.makeText(this, "请同意相关权限，否则功能无法使用", Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * 显示提示信息
-     *
-     * @since 2.5.0
-     */
-    private void showMissingPermissionDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("title");
-        builder.setMessage("msg");
-
-        // 拒绝, 退出应用
-        builder.setNegativeButton("cancle",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
-                });
-
-        builder.setPositiveButton("setting",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        startAppSettings();
-                    }
-                });
-
-        builder.setCancelable(false);
-
-        builder.show();
-    }
-    /**
-     * 启动应用的设置
-     *
-     * @since 2.5.0
-     */
-    private void startAppSettings() {
-        Intent intent = new Intent(
-                Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        intent.setData(Uri.parse("package:" + getPackageName()));
-        startActivity(intent);
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 
     @Override
@@ -347,9 +345,6 @@ public class MainActivity extends Activity implements View.OnClickListener, AMap
     @Override
     protected void onResume() {
         super.onResume();
-        if (isNeedCheck) {
-            checkPermissions(needPermissions);
-        }
         //在activity执行onResume时执行mMapView.onResume ()，重新绘制加载地图
         mMapView.onResume();
     }
@@ -366,8 +361,6 @@ public class MainActivity extends Activity implements View.OnClickListener, AMap
         //在activity执行onSaveInstanceState时执行mMapView.onSaveInstanceState (outState)，保存地图当前的状态
         mMapView.onSaveInstanceState(outState);
     }
-
-
 
     public void getMapImage() {
         /**
@@ -423,7 +416,7 @@ public class MainActivity extends Activity implements View.OnClickListener, AMap
 
     @Override
     public void onMapClick(LatLng latLng) {
-        drawPoint(latLng);
+//        drawPoint(latLng);
     }
 
     @Override
@@ -438,7 +431,7 @@ public class MainActivity extends Activity implements View.OnClickListener, AMap
 
     @Override
     public void onMapLoaded() {
-        addMarkersToMap();
+//        addMarkersToMap();
     }
 
     @Override
