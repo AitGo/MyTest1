@@ -103,6 +103,8 @@ public class MainActivity extends Activity implements View.OnClickListener, AMap
     private RecyclerView rv_points;
     private PointsListAdapter adapter;
     private List<CameraInfo> cameraInfos = new ArrayList<>();
+    private List<Marker> markers = new ArrayList<>();
+    private List<Marker> checkMarkers = new ArrayList<>();
 
     private GeocodeSearch geocoderSearch;
 
@@ -171,7 +173,15 @@ public class MainActivity extends Activity implements View.OnClickListener, AMap
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 drawerLayout.closeDrawer(leftLayout);
-                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraInfos.get(position).getLatLng(),16));
+                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraInfos.get(position).getLatLng(),17));
+                markers.get(position).remove();
+                MarkerOptions markerOption = new MarkerOptions();
+                markerOption.position(cameraInfos.get(position).getLatLng());
+                // markerOption.snippet("西安市：111");
+                markerOption.draggable(true);
+                markerOption.setFlat(true);
+                markerOption.icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(),R.mipmap.camera_red)));
+                checkMarkers.add(aMap.addMarker(markerOption));
             }
         });
     }
@@ -227,13 +237,19 @@ public class MainActivity extends Activity implements View.OnClickListener, AMap
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     private void drawPoint(LatLng latLng) {
         MarkerOptions markerOption = new MarkerOptions();
         markerOption.position(latLng);
         // markerOption.snippet("西安市：111");
         markerOption.draggable(true);
         markerOption.setFlat(true);
-        aMap.addMarker(markerOption);
+        markerOption.icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(),R.mipmap.camera_black)));
+        markers.add(aMap.addMarker(markerOption));
     }
 
     /**
