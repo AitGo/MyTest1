@@ -7,6 +7,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+
+import com.bumptech.glide.Glide;
 
 import uk.co.senab.photoview.PhotoView;
 
@@ -27,7 +30,7 @@ public class ImageFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View inflate = inflater.inflate(R.layout.fragment_image, null);
         hvImage = inflate.findViewById(R.id.hvImage);
-        hvImage.setImageResource(R.mipmap.ic_launcher_round);
+        Glide.with(getContext()).load(getArguments().getString("url")).into((hvImage));
         return inflate;
     }
 

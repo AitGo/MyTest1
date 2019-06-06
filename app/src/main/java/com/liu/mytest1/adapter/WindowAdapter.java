@@ -11,9 +11,12 @@ import android.widget.Toast;
 
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.model.Marker;
+import com.liu.mytest1.diagnose.CameraInfo;
 import com.liu.mytest1.ImagePageActivity;
+import com.liu.mytest1.MainActivity;
 import com.liu.mytest1.R;
 import com.liu.mytest1.UpdateInfoActivity;
+import com.liu.mytest1.base.Constants;
 
 /**
  * @创建者 ly
@@ -37,13 +40,9 @@ public class WindowAdapter implements AMap.InfoWindowAdapter, AMap.OnMarkerClick
     public View getInfoWindow(Marker marker) {
         //关联布局
         View view = LayoutInflater.from(context).inflate(R.layout.layout_info_item, null);
-        //标题
         TextView name = (TextView) view.findViewById(R.id.info_name);
-        //地址信息
         TextView address = (TextView) view.findViewById(R.id.info_address);
-        //纬度
         TextView tel = (TextView) view.findViewById(R.id.info_tel);
-        //经度
         TextView orientation = (TextView) view.findViewById(R.id.info_orientation);
 
         Button update = view.findViewById(R.id.btn_update);
@@ -52,14 +51,11 @@ public class WindowAdapter implements AMap.InfoWindowAdapter, AMap.OnMarkerClick
         update.setOnClickListener(this);
         image.setOnClickListener(this);
 
-//        name.setText(marker.getTitle());
-//        address.setText(marker.getSnippet());
-//        tel.setText(marker.getPosition().latitude + "");
-//        orientation.setText(marker.getPosition().longitude + "");
-        Log.e(TAG, "getInfoWindow: "+marker.getTitle() );
-        Log.e(TAG, "getInfoWindow: "+marker.getSnippet() );
-        Log.e(TAG, "getInfoWindow: "+marker.getPosition().latitude );
-        Log.e(TAG, "getInfoWindow: "+marker.getPosition().longitude );
+        CameraInfo cameraInfo = (CameraInfo) marker.getObject();
+        name.setText(cameraInfo.getName());
+        address.setText(cameraInfo.getAddress());
+        tel.setText(cameraInfo.getTel());
+        orientation.setText(cameraInfo.getOrientation());
         return view;
     }
 
@@ -89,7 +85,7 @@ public class WindowAdapter implements AMap.InfoWindowAdapter, AMap.OnMarkerClick
             case R.id.btn_update:
                 Toast.makeText(context,"update",Toast.LENGTH_LONG).show();
                 Intent intent1 = new Intent(context,UpdateInfoActivity.class);
-                context.startActivity(intent1);
+                ((MainActivity)context).startActivityForResult(intent1,Constants.REQUEST_INFO_UPDATE);
                 break;
             case R.id.btn_image:
                 Intent intent = new Intent(context,ImagePageActivity.class);

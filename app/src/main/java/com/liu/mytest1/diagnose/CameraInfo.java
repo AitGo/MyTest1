@@ -1,10 +1,13 @@
-package com.liu.mytest1;
+package com.liu.mytest1.diagnose;
 
 import android.graphics.Camera;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.amap.api.maps.model.LatLng;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -15,9 +18,11 @@ import java.util.List;
  * @更新时间 $Date$
  * @更新描述 ${TODO}
  */
-public class CameraInfo implements MultiItemEntity {
+public class CameraInfo implements Parcelable {
+
     public static final int ABLE = 1;
     public static final int UNABLE = 0;
+    private int id;
     private LatLng latLng;
     private String address;
     private String name;
@@ -25,21 +30,46 @@ public class CameraInfo implements MultiItemEntity {
     private String orientation;
     private List<String> images;
     private int state;
-    public static final int IMAGE = 1;
-    public static final int ADD = 2;
-    private int itemType;
+
 
     public CameraInfo(LatLng latLng, int state) {
         this.latLng = latLng;
         this.state = state;
     }
 
-    public CameraInfo(int itemType) {
-        this.itemType = itemType;
-    }
-
     public CameraInfo() {
 
+    }
+
+    protected CameraInfo(Parcel in) {
+        id = in.readInt();
+        latLng = in.readParcelable(LatLng.class.getClassLoader());
+        address = in.readString();
+        name = in.readString();
+        tel = in.readString();
+        orientation = in.readString();
+        images = in.createStringArrayList();
+        state = in.readInt();
+    }
+
+    public static final Creator<CameraInfo> CREATOR = new Creator<CameraInfo>() {
+        @Override
+        public CameraInfo createFromParcel(Parcel in) {
+            return new CameraInfo(in);
+        }
+
+        @Override
+        public CameraInfo[] newArray(int size) {
+            return new CameraInfo[size];
+        }
+    };
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public LatLng getLatLng() {
@@ -99,7 +129,19 @@ public class CameraInfo implements MultiItemEntity {
     }
 
     @Override
-    public int getItemType() {
-        return itemType;
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
+        dest.writeParcelable(this.latLng,0);
+        dest.writeString(this.address);
+        dest.writeString(this.name);
+        dest.writeString(this.tel);
+        dest.writeString(this.orientation);
+        dest.writeStringList(images);
+        dest.writeInt(this.state);
     }
 }

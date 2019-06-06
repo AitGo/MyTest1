@@ -11,7 +11,7 @@
         android:id="@+id/info_address"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="玉兰路433号长沙西中心"/>
+        android:text=""/>
 
     <TextView
         android:id="@+id/info_name"

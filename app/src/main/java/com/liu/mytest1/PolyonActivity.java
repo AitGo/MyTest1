@@ -50,6 +50,7 @@ import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.RegeocodeAddress;
 import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.amap.api.services.geocoder.RegeocodeResult;
+import com.liu.mytest1.diagnose.CameraInfo;
 
 import java.io.File;
 import java.io.FileNotFoundException;

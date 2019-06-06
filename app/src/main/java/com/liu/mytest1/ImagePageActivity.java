@@ -10,6 +10,8 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.widget.TextView;
 
+import com.liu.mytest1.diagnose.CameraInfo;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -25,7 +27,7 @@ public class ImagePageActivity extends FragmentActivity {
 
     private ViewPager vp_img;
     private TextView tv_page;
-    private ArrayList<String> urlList;
+    private ArrayList<String> urlList = new ArrayList<>();
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -35,16 +37,8 @@ public class ImagePageActivity extends FragmentActivity {
         tv_page = findViewById(R.id.tv_page_size);
         vp_img = findViewById(R.id.vp_image);
 
-        String [] urls={"http://7xla0x.com1.z0.glb.clouddn.com/picJarvanIV_0.jpg",
-                "http://7xla0x.com1.z0.glb.clouddn.com/picJarvanIV_1.jpg",
-                "http://7xla0x.com1.z0.glb.clouddn.com/picJarvanIV_2.jpg",
-                "http://7xla0x.com1.z0.glb.clouddn.com/picJarvanIV_3.jpg",
-                "http://7xla0x.com1.z0.glb.clouddn.com/picJarvanIV_4.jpg",
-                "http://7xla0x.com1.z0.glb.clouddn.com/picJarvanIV_5.jpg",
-                "http://7xla0x.com1.z0.glb.clouddn.com/picJarvanIV_6.jpg",};
-
-        urlList = new ArrayList<>();
-        Collections.addAll(urlList, urls);
+        CameraInfo cameraInfo = getIntent().getParcelableExtra("cameraInfo");
+        urlList.addAll(cameraInfo.getImages());
 
         vp_img.setAdapter(new PictureSlidePagerAdapter(getSupportFragmentManager()));
         vp_img.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {

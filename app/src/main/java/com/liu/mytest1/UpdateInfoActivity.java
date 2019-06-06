@@ -14,12 +14,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.liu.mytest1.adapter.ImageListAdapter;
-import com.liu.mytest1.adapter.ImagePageAdapter;
+import com.liu.mytest1.diagnose.CameraInfo;
+import com.liu.mytest1.diagnose.ImageBean;
 import com.liu.mytest1.utils.getPhotoFromPhotoAlbum;
 import com.lxj.xpopup.XPopup;
 import com.lxj.xpopup.impl.BottomListPopupView;
@@ -39,15 +41,19 @@ import pub.devrel.easypermissions.EasyPermissions;
  * @更新时间 $Date$
  * @更新描述 ${TODO}
  */
-public class UpdateInfoActivity extends Activity implements EasyPermissions.PermissionCallbacks{
+public class UpdateInfoActivity extends Activity implements EasyPermissions.PermissionCallbacks, View.OnClickListener {
 
     private RecyclerView rv_image;
+    private Button btn_back,btn_confirm;
+    private EditText et_address,et_name,et_tel,et_orientation;
     private ImageListAdapter adapter;
-    private List<CameraInfo> cameraInfos = new ArrayList<>();
+    private List<ImageBean> imageBeans = new ArrayList<>();
+    private CameraInfo cameraInfo;
     private File cameraSavePath;//拍照照片路径
     private Uri uri;//照片uri
     private String photoPath;
     private BottomListPopupView popupView;
+    private int index = -1;
 
     private String[] permissions = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
@@ -56,27 +62,39 @@ public class UpdateInfoActivity extends Activity implements EasyPermissions.Perm
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_info);
         rv_image = findViewById(R.id.rv_image);
+        btn_back = findViewById(R.id.btn_back);
+        btn_confirm = findViewById(R.id.btn_confirm);
+        et_address = findViewById(R.id.et_address);
+        et_name = findViewById(R.id.et_name);
+        et_tel = findViewById(R.id.et_tel);
+        et_orientation = findViewById(R.id.et_orientation);
 
-        cameraInfos.add(new CameraInfo(CameraInfo.IMAGE));
-        cameraInfos.add(new CameraInfo(CameraInfo.IMAGE));
-        cameraInfos.add(new CameraInfo(CameraInfo.IMAGE));
-        cameraInfos.add(new CameraInfo(CameraInfo.IMAGE));
-        cameraInfos.add(new CameraInfo(CameraInfo.IMAGE));
-        cameraInfos.add(new CameraInfo(CameraInfo.ADD));
+        btn_back.setOnClickListener(this);
+        btn_confirm.setOnClickListener(this);
+
+        cameraInfo = (CameraInfo) getIntent().getParcelableExtra("cameraInfo");
+
+        et_address.setText(cameraInfo.getAddress());
+        et_name.setText(cameraInfo.getName());
+        et_tel.setText(cameraInfo.getTel());
+        et_orientation.setText(cameraInfo.getOrientation());
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         rv_image.setLayoutManager(layoutManager);
-        adapter = new ImageListAdapter(cameraInfos);
+        ImageBean bean = new ImageBean();
+        imageBeans = bean.cameraInfo2ImageBean(cameraInfo);
+        adapter = new ImageListAdapter(imageBeans);
         rv_image.setAdapter(adapter);
         adapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                Toast.makeText(getApplicationContext(),cameraInfos.get(position).getItemType() +"",Toast.LENGTH_LONG).show();
-                if(cameraInfos.get(position).getItemType() == CameraInfo.IMAGE) {
+                Toast.makeText(getApplicationContext(),imageBeans.get(position).getItemType() +"",Toast.LENGTH_LONG).show();
+                index = position;
+                if(imageBeans.get(position).getItemType() == ImageBean.IMAGE) {
                     //修改已经存在的照片
                     popupView.show();
-                }else if(cameraInfos.get(position).getItemType() == CameraInfo.ADD) {
+                }else if(imageBeans.get(position).getItemType() == ImageBean.ADD) {
                     //新增照片
                     popupView.show();
                 }
@@ -84,6 +102,22 @@ public class UpdateInfoActivity extends Activity implements EasyPermissions.Perm
         });
         getPermission();
         initDialog();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_back:
+                finish();
+                break;
+            case R.id.btn_confirm:
+                Intent intent = getIntent();
+//                intent.putExtra("cameraInfoId",cameraInfos);
+                setResult(Activity.RESULT_OK, intent);
+                finish();
+                finish();
+                break;
+        }
     }
 
     @Override
@@ -101,6 +135,18 @@ public class UpdateInfoActivity extends Activity implements EasyPermissions.Perm
             photoPath = getPhotoFromPhotoAlbum.getRealPathFromUri(this, data.getData());
             Log.d("相册返回图片路径:", photoPath);
 //            Glide.with(this).load(photoPath).into(ivTest);
+        }
+
+        if(index != -1) {
+            if(index != imageBeans.size()-1) {
+                //修改照片
+                Toast.makeText(getApplicationContext(),"修改照片" + index,Toast.LENGTH_LONG).show();
+
+            }else {
+                //新增照片
+                Toast.makeText(getApplicationContext(),"新增照片",Toast.LENGTH_LONG).show();
+
+            }
         }
     }
 
@@ -173,4 +219,6 @@ public class UpdateInfoActivity extends Activity implements EasyPermissions.Perm
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
         Toast.makeText(this, "请同意相关权限，否则功能无法使用", Toast.LENGTH_SHORT).show();
     }
+
+
 }

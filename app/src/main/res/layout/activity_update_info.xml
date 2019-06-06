@@ -11,6 +11,7 @@
         android:background="@color/bg_title">
 
         <Button
+            android:id="@+id/btn_back"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_centerVertical="true"
@@ -26,6 +27,7 @@
             android:textColor="#ffffff"/>
 
         <Button
+            android:id="@+id/btn_confirm"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_alignParentRight="true"
