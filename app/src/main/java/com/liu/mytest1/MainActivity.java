@@ -151,7 +151,7 @@ public class MainActivity extends Activity implements View.OnClickListener, AMap
 
         CameraInfo cameraInfo1 = new CameraInfo();
         cameraInfo1.setId(1);
-        cameraInfo1.setAddress("长沙西中心");
+        cameraInfo1.setAddress("湖南省长沙市岳麓区玉兰路433号长沙西中心");
         cameraInfo1.setLatLng(latLng1);
         cameraInfo1.setName("张三");
         cameraInfo1.setTel("13124562458");

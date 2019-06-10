@@ -89,7 +89,6 @@ public class UpdateInfoActivity extends Activity implements EasyPermissions.Perm
         adapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                Toast.makeText(getApplicationContext(),imageBeans.get(position).getItemType() +"",Toast.LENGTH_LONG).show();
                 index = position;
                 if(imageBeans.get(position).getItemType() == ImageBean.IMAGE) {
                     //修改已经存在的照片
