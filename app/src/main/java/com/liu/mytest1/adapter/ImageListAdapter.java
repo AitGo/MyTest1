@@ -5,6 +5,8 @@ import android.graphics.BitmapFactory;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.liu.mytest1.diagnose.CameraInfo;
@@ -47,7 +49,7 @@ public class ImageListAdapter extends BaseMultiItemQuickAdapter<ImageBean, BaseV
         switch (helper.getItemViewType()) {
             case ImageBean.IMAGE:
 //                helper.setImageResource(R.id.iv_img,R.mipmap.ic_launcher_round);
-                Glide.with(mContext).load(item.getUrl()).into((ImageView) helper.getView(R.id.iv_img));
+                Glide.with(mContext).load(item.getUrl()).apply(new RequestOptions().override(Target.SIZE_ORIGINAL)).into((ImageView) helper.getView(R.id.iv_img));
                 break;
             case ImageBean.ADD:
                 helper.setImageResource(R.id.iv_add,R.mipmap.add);

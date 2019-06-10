@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 
 import uk.co.senab.photoview.PhotoView;
 
@@ -30,7 +32,7 @@ public class ImageFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View inflate = inflater.inflate(R.layout.fragment_image, null);
         hvImage = inflate.findViewById(R.id.hvImage);
-        Glide.with(getContext()).load(getArguments().getString("url")).into((hvImage));
+        Glide.with(getContext()).load(getArguments().getString("url")).apply(new RequestOptions().override(Target.SIZE_ORIGINAL)).into((hvImage));
         return inflate;
     }
 
