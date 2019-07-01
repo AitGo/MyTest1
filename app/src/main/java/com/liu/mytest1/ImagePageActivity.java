@@ -1,7 +1,6 @@
 package com.liu.mytest1;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -13,7 +12,6 @@ import android.widget.TextView;
 import com.liu.mytest1.diagnose.CameraInfo;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * @创建者 ly
