@@ -27,11 +27,15 @@ import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.UiSettings;
+import com.amap.api.maps.model.BitmapDescriptor;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
+import com.amap.api.maps.model.MultiPointItem;
+import com.amap.api.maps.model.MultiPointOverlay;
+import com.amap.api.maps.model.MultiPointOverlayOptions;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.geocoder.GeocodeResult;
 import com.amap.api.services.geocoder.GeocodeSearch;
@@ -45,6 +49,7 @@ import com.liu.mytest1.diagnose.CameraInfo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -141,6 +146,61 @@ public class MainActivity extends Activity implements View.OnClickListener, AMap
                 aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraInfos.get(position).getLatLng(),17));
             }
         });
+
+        initPoint();
+    }
+
+    String[] lats = new String[]{"27.555471","27.729443","27.729443","27.729835","27.728546","27.729811","27.729446"};
+    String[] lons = new String[]{"112.071082","112.005062","112.005919","112.007109","112.006503","112.007218","112.011528"};
+    private void initPoint() {
+        MultiPointOverlayOptions overlayOptions = new MultiPointOverlayOptions();
+        BitmapDescriptor bitmap = BitmapDescriptorFactory.fromResource(R.mipmap.camera_blue);
+        overlayOptions.icon(bitmap);//设置图标
+        overlayOptions.anchor(0.5f,0.5f); //设置锚点
+        MultiPointOverlay multiPointOverlay = aMap.addMultiPointOverlay(overlayOptions);
+        List<MultiPointItem> list = new ArrayList<MultiPointItem>();
+        for(int i = 0; i < 100; i++) {
+            //创建MultiPointItem存放，海量点中某单个点的位置及其他信息
+            Random random = new Random();
+            double lat = Double.valueOf(lats[random.nextInt(6)]);
+            double lon =  Double.valueOf(lons[random.nextInt(6)]);
+            LatLng latLng = new LatLng(lat,lon);
+            MultiPointItem multiPointItem = new MultiPointItem(latLng);
+            multiPointItem.setObject("position:" + i);
+            list.add(multiPointItem);
+        }
+        MultiPointOverlayOptions overlayOptions1 = new MultiPointOverlayOptions();
+        BitmapDescriptor bitmap1 = BitmapDescriptorFactory.fromResource(R.mipmap.camera_red);
+        overlayOptions1.icon(bitmap1);//设置图标
+        overlayOptions1.anchor(0.5f,0.5f); //设置锚点
+        MultiPointOverlay multiPointOverlay1 = aMap.addMultiPointOverlay(overlayOptions1);
+        List<MultiPointItem> list1 = new ArrayList<MultiPointItem>();
+        for(int i = 0; i < 100; i++) {
+            //创建MultiPointItem存放，海量点中某单个点的位置及其他信息
+            Random random = new Random();
+            double lat = Double.valueOf(lats[random.nextInt(6)]);
+            double lon =  Double.valueOf(lons[random.nextInt(6)]);
+            LatLng latLng = new LatLng(lat,lon);
+            MultiPointItem multiPointItem = new MultiPointItem(latLng);
+            multiPointItem.setObject("position:" + i);
+            list1.add(multiPointItem);
+        }
+        multiPointOverlay1.setItems(list1);
+        multiPointOverlay.setItems(list);//将规范化的点集交给海量点管理对象设置，待加载完毕即可看到海量点信息
+
+        // 定义海量点点击事件
+        AMap.OnMultiPointClickListener multiPointClickListener = new AMap.OnMultiPointClickListener() {
+            // 海量点中某一点被点击时回调的接口
+            // 返回 true 则表示接口已响应事件，否则返回false
+            @Override
+            public boolean onPointClick(MultiPointItem pointItem) {
+                String object = (String) pointItem.getObject();
+                Log.e("point", object);
+                return false;
+            }
+        };
+        // 绑定海量点点击事件
+        aMap.setOnMultiPointClickListener(multiPointClickListener);
     }
 
     private void initData() {
@@ -201,6 +261,7 @@ public class MainActivity extends Activity implements View.OnClickListener, AMap
                 } else {
                     drawerLayout.openDrawer(leftLayout);
                 }
+                aMap.clear();
                 break;
             case R.id.btn_update:
                 Intent intent1 = new Intent(this,UpdateInfoActivity.class);

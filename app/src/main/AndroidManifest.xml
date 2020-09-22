@@ -41,12 +41,25 @@
             android:name="com.amap.api.v2.apikey"
             android:value="2694107606c4b660738d62e4b1d72dd6"/>
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".WordActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!--<activity android:name=".TestActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>-->
+        <!--
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>-->
 
         <activity android:name=".ImagePageActivity"/>
         <activity android:name=".UpdateInfoActivity"
